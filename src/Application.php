@@ -13,6 +13,7 @@ use Period\WpKit\WordPress\PostClassEnhancer;
 use Period\WpKit\WordPress\PostTypeRegistrar;
 use Period\WpKit\WordPress\ScriptStyleRegistrar;
 use Period\WpKit\WordPress\DocumentRenderer;
+use Period\WpKit\WordPress\MediaReferenceIndex;
 use Period\WpKit\WordPress\SiteInfo;
 use Period\WpKit\WordPress\TitleResolver;
 use Period\WpKit\WordPress\Translator;
@@ -49,6 +50,11 @@ final class Application
     public function posts(): PostTypeRegistrar
     {
         return $this->posts;
+    }
+
+    public function mediaReferenceIndex(array $config = []): MediaReferenceIndex
+    {
+        return new MediaReferenceIndex($config);
     }
 
     public function translator(): Translator
