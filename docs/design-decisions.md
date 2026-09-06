@@ -72,3 +72,44 @@ PHP ファイル内の JS はエディタ補完・構文チェック・差分管
 **分離の理由:** `SiteInfo` と将来の `TitleResolver` を分離することで、サイト固有情報（静的）とリクエスト依存情報（動的）の責務を明確に分ける。
 
 **今後の拡張候補:** `TitleResolver` の導入 / `TemplateFormatter` によるテンプレート整形 / `apply_filters` による最終出力のフック
+
+---
+
+## サイトコア連携に MU Plugin bootstrap を使う案
+
+**状態:** 採用確度の高い候補。現時点では確定方針ではない。
+
+WP-Kit が将来、個別サイトの成立条件に近い機能を担う場合、WP-Kit 全体をそのまま MU Plugin 化するのではなく、**サイト側の必須 bootstrap を MU Plugin とし、WP-Kit Core をそこから読み込む構成**を有力候補とする。
+
+想定する責務分離は以下のとおり。
+
+- **WP-Kit Core / reusable package**
+  - 再利用可能な共通機能
+  - サイトや有効化状態に依存しないライブラリ層
+- **Site Core Bootstrap / MU Plugin**
+  - サイトの成立に必須な初期化
+  - 必須 hook、共通 API、権限・認証補助など
+  - WP-Kit Core や必須 module のロード
+- **Optional Feature / 通常 Plugin**
+  - サイトごとに有無が変わる機能
+  - 管理者が有効化・無効化できるべき機能
+  - 外部連携や実験的機能
+- **Theme**
+  - template / view / UI / CSS / JS など表示責務
+
+### この候補を有力と考える理由
+
+通常 Plugin は管理画面から無効化できるため、無効化するとサイト自体の前提が崩れる機能を置く場所としては不安定である。一方 MU Plugin は常時ロードされるため、サイト固有の必須 runtime の bootstrap と相性がよい。
+
+ただし、MU Plugin には通常 Plugin の activation / deactivation lifecycle がない。そのため migration やセットアップ処理まで無条件に MU Plugin へ寄せるのではなく、**「常時ロードされるべきもの」と「任意に導入・切替できるもの」を分離する**ことを前提とする。
+
+### 採用判断の目安
+
+以下が明確になった場合、この構成を正式採用する可能性が高い。
+
+- WP-Kit がサイト固有の application runtime を継続的に担う
+- 無効化されるとログイン、権限、注文、配信、共通 API 等の主要機能が成立しない
+- Theme から業務ロジックを分離したい
+- 複数サイトで WP-Kit Core 自体の再利用性を維持したい
+
+逆に、WP-Kit が引き続き任意導入可能なライブラリとして完結する場合は、MU Plugin 化を前提としない。
