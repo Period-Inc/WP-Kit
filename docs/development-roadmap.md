@@ -85,6 +85,18 @@ Current implementation priorities:
   - [ ] frontend output documentation
   - [ ] examples / starter templates
 
+- [ ] **Object History** — WordPress オブジェクトの選択的な変更履歴を保存する
+  - デフォルトは無効（opt-in / default false）
+  - 対象を明示的に指定した場合のみ履歴を保存する
+  - 対象候補: 特定 post_id / post_type・CPT / meta_key / taxonomy / taxonomy terms / user meta / term meta
+  - meta に限定せず、taxonomy term の付け替え等も扱える汎用履歴基盤として設計する
+  - 保存候補: 変更前値 / 変更後値 / 更新日時 / 更新ユーザー / object type・ID / key / 操作種別（add / update / delete）
+  - 管理画面で時系列参照・差分表示を可能にする
+  - 過去値への復元は履歴基盤と分離可能な機能として検討する
+  - 履歴削除機能を持つ: 個別削除 / 対象単位の全削除 / 指定期間以前の削除
+  - 保存期間による自動 purge は後続拡張候補
+  - WooCommerce / ACF 等の大量更新を無条件に記録しない
+
 - [ ] **Relation** — post type 間の親子関係
   - 親/子 post_id を保持するメタフィールド
   - 管理画面の親/子リンク UI
