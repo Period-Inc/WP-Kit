@@ -17,7 +17,9 @@ final class ThemeContext
 
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->values[$key] ?? $default;
+        return array_key_exists($key, $this->values)
+            ? $this->values[$key]
+            : $default;
     }
 
     public function with(string $key, mixed $value): self
