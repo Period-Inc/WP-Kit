@@ -79,6 +79,14 @@ $resolver->siteTitle();  // "タイトル | サイト名"
 ```
 
 
+## Application Plugin
+
+WP-KitはPHP Framework / Libraryです。WordPress上で具体的なapplication responsibilityを完成させるPluginは **WP-Kit Application Plugin** としてWP-Kit本体から分離します。
+
+Application PluginはWP-Kitを利用するconsumerであり、依存方向は `Application Plugin → WP-Kit` の一方向です。分類は機能数や成熟度ではなく責務で判断します。
+
+→ [docs/application-plugin.md](docs/application-plugin.md)
+
 ## Theme Resolution
 
 requestごとに使用する WordPress Theme を決定する基盤です。
@@ -159,6 +167,7 @@ new MetaBox([
 
 ## ドキュメント
 
+- [docs/application-plugin.md](docs/application-plugin.md) — WP-Kit Application Pluginの定義・責務境界
 - [docs/usage.md](docs/usage.md) — 使用例リファレンス（全機能）
 - [docs/metabox.md](docs/metabox.md) — MetaBox フィールド定義・save() の挙動
 - [docs/usage-metabox.md](docs/usage-metabox.md) — MetaBox 使用例（gallery / repeater）
