@@ -78,6 +78,19 @@ $info->name();            // サイト名
 $resolver->siteTitle();  // "タイトル | サイト名"
 ```
 
+
+## Theme Resolution
+
+requestごとに使用する WordPress Theme を決定する基盤です。
+
+`ThemeResolver` は priority 付きRuleを評価し、`ThemeTarget(template, stylesheet, settingsStylesheet)` を返します。管理者preview、user/role、request path、post/post type、taxonomy/term等はすべて同じResolverへの入力として扱います。
+
+Deploymentは責務外です。deploy-kit等が別directoryへTheme treeを展開しても、WP-Kitはdeployment名やGit branchを知りません。利用可能なTheme identifierだけを扱います。
+
+Themeをロードする前にResolverを有効化する必要があるため、サイト成立条件として使う場合はThemeの `functions.php` ではなくMU Plugin / site bootstrapから登録します。
+
+→ [docs/theme-resolution.md](docs/theme-resolution.md)
+
 ## MetaBox
 
 ```php
@@ -157,6 +170,9 @@ new MetaBox([
 - [docs/usage-body-renderer.md](docs/usage-body-renderer.md) — BodyRenderer（body タグ生成）
 - [docs/usage-document-renderer.md](docs/usage-document-renderer.md) — DocumentRenderer（完全な HTML ドキュメント生成）
 - [docs/usage-hooks.md](docs/usage-hooks.md) — HookRegistrar / ShortcodeRegistrar（action / filter / shortcode 登録）
+- [docs/theme-resolution.md](docs/theme-resolution.md) — request単位のTheme Resolution責務・設計
+- [docs/theme-resolution-roadmap.md](docs/theme-resolution-roadmap.md) — 管理比較 / user / route / post / taxonomyを同じResolverへ統合する拡張計画
+- [docs/usage-theme-resolution.md](docs/usage-theme-resolution.md) — preview / user / post type / taxonomy条件の利用例
 - [docs/usage-template-tags.md](docs/usage-template-tags.md) — Template Tags（pwk()->title() / site() / document()）
 - [docs/migration.md](docs/migration.md) — v1 → v2 移行ガイド・非推奨項目一覧
 - [docs/design-decisions.md](docs/design-decisions.md) — 設計判断の記録

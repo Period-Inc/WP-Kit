@@ -113,3 +113,49 @@ WP-Kit が将来、個別サイトの成立条件に近い機能を担う場合�
 - 複数サイトで WP-Kit Core 自体の再利用性を維持したい
 
 逆に、WP-Kit が引き続き任意導入可能なライブラリとして完結する場合は、MU Plugin 化を前提としない。
+
+
+---
+
+## Theme Resolution を WP-Kit の責務にする理由
+
+**結論:** repository content をdirectoryへ展開するDeploymentと、そのrequestでどのThemeを使うかというRuntime Resolutionを分離する。Theme ResolutionはWP-Kitが担う。
+
+deploy-kit等のdeployment toolは、Git repository / resolved commitを設定済みdirectoryへ安全に展開する責務だけを持つ。展開先がWordPress Themeであるか、Pluginであるか、別のassetであるかを解釈しない。
+
+一方、次はWordPress runtime固有の問題である。
+
+- 管理者が複数Themeを比較する
+- user / role / capabilityでThemeを切り替える
+- request / route条件でThemeを切り替える
+- post / post typeでThemeを切り替える
+- taxonomy / termでThemeを切り替える
+- 別directoryに置かれた同一Themeのtreeを一時previewする
+- child themeのtemplate / stylesheet整合を保つ
+- Theme Mods / Custom CSSの設定identityを維持する
+
+これらをdeployment側へ持たせると、deployment toolがWordPressのapplication semanticsへ依存して再利用性を失う。また、Theme切替がdeploy-kitの有無に依存する。
+
+そのためWP-Kitに **Theme Resolution** を置き、Theme selectionをrequest contextから決定する。
+
+### Resolverを条件種別ごとに固定しない
+
+Theme Resolver自身は「user rule」「post type rule」等を固定実装しない。priority付きRuleとThemeContextだけを基本契約とする。
+
+これにより、管理preview・user・route・content等を同じresolution pipelineへ追加できる。
+
+### Content条件のタイミング
+
+WordPressはTheme codeをロードする前にtemplate/stylesheetを解決する。そのため、Theme Resolution時点ではmain queryや `is_singular()` / `is_tax()` 等のconditional tagが利用可能とは限らない。
+
+post / taxonomy等を条件にする場合は、Theme bootstrap前にrequestから対象contentを解決するadapterを別責務として用意し、その結果をThemeContextへ供給する。
+
+Resolver本体が通常のmain query成立を暗黙に前提としてはいけない。
+
+### Early bootstrap
+
+Theme ResolutionはThemeの `functions.php` から起動すると遅すぎる。
+
+サイトの成立条件として利用する場合、MU Plugin / Site Core Bootstrap等、Themeより前にロードされる層がWP-Kitを読み込み、ThemeResolutionRuntimeを登録する。
+
+この判断は「サイトコア連携に MU Plugin bootstrap を使う案」と整合する。

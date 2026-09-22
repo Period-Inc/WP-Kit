@@ -7,6 +7,7 @@ namespace Period\WpKit\Tests;
 use PHPUnit\Framework\TestCase;
 use Period\WpKit\Application;
 use Period\WpKit\WordPress\SiteInfo;
+use Period\WpKit\WordPress\ThemeResolution\ThemeResolver;
 
 final class ApplicationTest extends TestCase
 {
@@ -31,6 +32,12 @@ final class ApplicationTest extends TestCase
         $result = $this->app->title();
 
         $this->assertIsString($result);
+    }
+
+    public function testThemesReturnsThemeResolver(): void
+    {
+        $this->assertInstanceOf(ThemeResolver::class, $this->app->themes());
+        $this->assertSame($this->app->themes(), $this->app->themes());
     }
 
     public function testSiteReturnsSiteInfo(): void
