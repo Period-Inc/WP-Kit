@@ -78,6 +78,19 @@ $info->name();            // サイト名
 $resolver->siteTitle();  // "タイトル | サイト名"
 ```
 
+
+## Theme Resolution
+
+requestごとに使用する WordPress Theme を決定する基盤です。
+
+`ThemeResolver` は priority 付きRuleを評価し、`ThemeTarget(template, stylesheet, settingsStylesheet)` を返します。管理者preview、user/role、request path、post/post type、taxonomy/term等はすべて同じResolverへの入力として扱います。
+
+Deploymentは責務外です。deploy-kit等が別directoryへTheme treeを展開しても、WP-Kitはdeployment名やGit branchを知りません。利用可能なTheme identifierだけを扱います。
+
+Themeをロードする前にResolverを有効化する必要があるため、サイト成立条件として使う場合はThemeの `functions.php` ではなくMU Plugin / site bootstrapから登録します。
+
+→ [docs/theme-resolution.md](docs/theme-resolution.md)
+
 ## MetaBox
 
 ```php
