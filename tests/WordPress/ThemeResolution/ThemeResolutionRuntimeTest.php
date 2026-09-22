@@ -94,6 +94,26 @@ final class ThemeResolutionRuntimeTest extends TestCase
         );
     }
 
+    public function testContextFactoryReentryFallsBackToNativeOptionProcessing(): void
+    {
+        $resolver = new ThemeResolver();
+        $resolver->addRule('preview', fn (ThemeContext $context) => new ThemeTarget('astra', 'preview'));
+
+        $runtime = null;
+        $nested = null;
+
+        $runtime = new ThemeResolutionRuntime(
+            $resolver,
+            function () use (&$runtime, &$nested): ThemeContext {
+                $nested = $runtime->filterOption('native', 'some_option');
+                return new ThemeContext();
+            }
+        );
+
+        self::assertSame('astra', $runtime->filterTemplate(false));
+        self::assertSame('native', $nested);
+    }
+
     public function testContextIsResolvedOnlyOncePerRequest(): void
     {
         $calls = 0;
