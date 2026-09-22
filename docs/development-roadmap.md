@@ -73,6 +73,15 @@ Current implementation priorities:
   - [x] renderer / compile integration tests
 
   Remaining:
+  - [ ] **Post Asset Attachment** — postmeta を attachment relation として CSS / JS / file / code を投稿へ関連付ける
+    - postmeta はコード本体ではなく attachment の参照・関係を保持する
+    - inline / file の両方を扱えるようにする
+    - 投稿単位で必要な asset のみ enqueue / render する
+    - source と生成物を分離し、保存先を filesystem / CPT / media 等へ差し替え可能にする
+    - SCSS / Sass source → compile/render → CSS artifact → post attach の一連の pipeline を提供する
+    - source 更新時のみ再 compile/render できるようにする
+    - 複数 post からの asset 共有、dependency、version / cache busting は後続拡張とする
+    - Object History と接続し、source code の変更履歴を opt-in で保持できる設計を検討する
   - [ ] wp_head / wp_footer auto integration
   - [ ] actual MetaBox field definitions
   - [ ] CodeMirror editor integration
