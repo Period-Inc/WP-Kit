@@ -159,3 +159,22 @@ Theme ResolutionはThemeの `functions.php` から起動すると遅すぎる。
 サイトの成立条件として利用する場合、MU Plugin / Site Core Bootstrap等、Themeより前にロードされる層がWP-Kitを読み込み、ThemeResolutionRuntimeを登録する。
 
 この判断は「サイトコア連携に MU Plugin bootstrap を使う案」と整合する。
+
+
+---
+
+## WP-Kit Application Pluginを責務で定義する理由
+
+**結論:** WP-Kit Application Pluginは、WP-Kitを利用してWordPress上の具体的なapplication responsibilityを完成させる独立Pluginとする。分類基準に成熟度・コード量・機能数は使わない。
+
+WP-Kit自身はPHP Framework / Libraryとして再利用可能なAPI、domain primitive、WordPress adapterを提供する。Application Pluginはそのconsumerであり、admin UI、persistent settings、capability、REST/webhook、migration、external integration、application-specific policy等を必要に応じて所有する。
+
+依存方向は `Application Plugin → WP-Kit` の一方向とし、WP-Kit Coreが個別Application Pluginを知ってはいけない。
+
+Application PluginとSite Core / MU Pluginも区別する。Application Pluginは具体的な機能責務、Site Coreはinstallationの成立条件とbootstrapを担当する。通常PluginかMU Pluginかというload方式はApplication Pluginの分類基準ではない。
+
+WordPress非依存のdomainが独立できる場合は、Domain LibraryとApplication Pluginを分離し、Application PluginがWP-KitとDomain Libraryの両方を利用する構成を許容する。
+
+実例は定義検証のため別途蓄積する。Rampart / Payment Adapter等は候補だが、十分な比較例が揃うまで分類をこの判断記録では確定しない。
+
+詳細は `docs/application-plugin.md` を正本とする。
