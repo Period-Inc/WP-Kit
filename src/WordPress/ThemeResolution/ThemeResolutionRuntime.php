@@ -10,6 +10,7 @@ final class ThemeResolutionRuntime
 {
     private Closure $contextFactory;
     private bool $resolved = false;
+    private bool $resolving = false;
     private ?ThemeResolution $resolution = null;
 
     public function __construct(
@@ -37,18 +38,32 @@ final class ThemeResolutionRuntime
             return $this->resolution;
         }
 
-        $context = ($this->contextFactory)();
-
-        if (!$context instanceof ThemeContext) {
-            $this->resolved = true;
+        // Context providers may call WordPress APIs that themselves read
+        // options. Those reads re-enter pre_option while Theme Resolution is
+        // still being built. During that nested read, leave WordPress on its
+        // native Theme/options instead of recursively resolving forever.
+        if ($this->resolving) {
             return null;
         }
 
-        $resolution = $this->resolver->resolve($context);
-        $this->resolution = $resolution;
-        $this->resolved = true;
+        $this->resolving = true;
 
-        return $this->resolution;
+        try {
+            $context = ($this->contextFactory)();
+
+            if (!$context instanceof ThemeContext) {
+                $this->resolved = true;
+                return null;
+            }
+
+            $resolution = $this->resolver->resolve($context);
+            $this->resolution = $resolution;
+            $this->resolved = true;
+
+            return $this->resolution;
+        } finally {
+            $this->resolving = false;
+        }
     }
 
     public function filterTemplate(mixed $pre): mixed
