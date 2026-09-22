@@ -170,6 +170,8 @@ new MetaBox([
 - [docs/usage-body-renderer.md](docs/usage-body-renderer.md) — BodyRenderer（body タグ生成）
 - [docs/usage-document-renderer.md](docs/usage-document-renderer.md) — DocumentRenderer（完全な HTML ドキュメント生成）
 - [docs/usage-hooks.md](docs/usage-hooks.md) — HookRegistrar / ShortcodeRegistrar（action / filter / shortcode 登録）
+- [docs/theme-resolution.md](docs/theme-resolution.md) — request単位のTheme Resolution責務・設計
+- [docs/usage-theme-resolution.md](docs/usage-theme-resolution.md) — preview / user / post type / taxonomy条件の利用例
 - [docs/usage-template-tags.md](docs/usage-template-tags.md) — Template Tags（pwk()->title() / site() / document()）
 - [docs/migration.md](docs/migration.md) — v1 → v2 移行ガイド・非推奨項目一覧
 - [docs/design-decisions.md](docs/design-decisions.md) — 設計判断の記録
