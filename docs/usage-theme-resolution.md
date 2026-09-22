@@ -9,10 +9,9 @@ A Site Core / MU Plugin can load WP-Kit and register the resolver.
 ```php
 use Period\WpKit\WordPress\ThemeResolution\ThemeContext;
 use Period\WpKit\WordPress\ThemeResolution\ThemeResolutionRuntime;
-use Period\WpKit\WordPress\ThemeResolution\ThemeResolver;
 use Period\WpKit\WordPress\ThemeResolution\ThemeTarget;
 
-$resolver = new ThemeResolver();
+$resolver = pwk()->themes();
 
 $resolver->addRule(
     'admin-preview',
