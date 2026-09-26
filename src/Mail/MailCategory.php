@@ -10,6 +10,7 @@ final class MailCategory
     public const NOTIFICATION = 'notification';
     public const BROADCAST = 'broadcast';
     public const SYSTEM = 'system';
+    public const UNCATEGORIZED = 'uncategorized';
 
     private function __construct()
     {
