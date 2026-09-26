@@ -122,6 +122,7 @@ metadata
 - `notification`
 - `broadcast`
 - `system`
+- `uncategorized` — `wp_mail()` interception 等、用途を判定できない互換入力
 
 Postmark Message Stream 等への変換は Transport / provider integration 側の責務です。
 
@@ -345,6 +346,12 @@ bypass interception
 - `wp_mail` interception は compatibility layer とする
 - WooCommerce / WordPress Core /主要 plugin は integration test で互換性を確認する
 
+### WordPress 6.9 embeds compatibility
+
+WordPress 6.9 では `wp_mail()` に第6引数 `$embeds` が追加されています。WpMailTransport は runtime の `wp_mail()` parameter count を確認し、6引数対応時だけ embeds を渡します。
+
+古い WordPress で embeds が指定された場合は画像を黙って落とさず、`wp_mail_embeds_unsupported` として明示的に失敗させます。
+
 ---
 
 ## Attachments and Embeds
@@ -545,22 +552,26 @@ Application Plugin は最低限次を診断できるようにします。
 
 ### Phase 1 — Core contracts
 
-- [ ] MailMessage / value objects
-- [ ] status values
-- [ ] Queue / Repository / Scheduler / Transport contracts
-- [ ] TransportResult
-- [ ] RetryPolicy
-- [ ] unit tests
-- [ ] WordPress-free load test
+- [x] MailMessage / value objects
+- [x] status values
+- [x] Queue / Scheduler / Transport / AttachmentStore / RetryPolicy contracts
+- [ ] Repository contract — persistent Queue entity と claim semantics を Phase 3 設計と合わせて確定する
+- [x] TransportResult
+- [x] RetryPolicy default implementation
+- [x] unit tests added
+- [x] WordPress-free smoke test
 
 ### Phase 2 — WordPress compatibility primitives
 
-- [ ] WpMailTransport
-- [ ] WpMailContext recursion guard
-- [ ] WpMailInterceptor
-- [ ] attachments / embeds normalization
-- [ ] WordPress function absence guard
-- [ ] interception unit/integration tests
+- [x] WpMailTransport
+- [x] WpMailContext recursion guard
+- [x] WpMailInterceptor
+- [x] WpMailMessageMapper
+- [x] attachments / embeds normalization
+- [x] WordPress function absence guard
+- [x] unit tests added
+- [x] standalone smoke test
+- [ ] full PHPUnit suite — CI未設定、実行環境で確認
 
 ### Phase 3 — Queue Application runtime
 
