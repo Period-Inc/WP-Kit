@@ -168,6 +168,7 @@ new MetaBox([
 ## ドキュメント
 
 - [docs/application-plugin.md](docs/application-plugin.md) — WP-Kit Application Pluginの定義・責務境界
+- [docs/mail-queue.md](docs/mail-queue.md) — Mail Queueの責務境界・Core contract・Application Plugin runtime設計
 - [docs/usage.md](docs/usage.md) — 使用例リファレンス（全機能）
 - [docs/metabox.md](docs/metabox.md) — MetaBox フィールド定義・save() の挙動
 - [docs/usage-metabox.md](docs/usage-metabox.md) — MetaBox 使用例（gallery / repeater）

@@ -244,6 +244,28 @@ Current implementation priorities:
   - [ ] uploads 直接公開前提を壊さない
   - [ ] runtime dependency を最小限に保つ
 
+#### Mail / Delivery
+
+- [ ] **Mail Queue foundation** — Provider非依存のメール配送基盤
+  - [x] architecture / responsibility boundary documented
+  - [x] MailMessage / value objects
+  - [x] Queue / Scheduler / Transport / AttachmentStore / RetryPolicy contracts
+  - [ ] Repository contract / persistent Queue entity
+  - [x] QueueStatus / DeliveryStatus separation
+  - [x] TransportResult / RetryPolicy
+  - [x] WpMailTransport
+  - [x] WpMailContext recursion guard
+  - [x] wp_mail compatibility interceptor primitive
+  - [x] WpMailMessageMapper
+  - [x] attachment / embed normalization contract
+  - [x] WordPress-free smoke tests
+  - [ ] full PHPUnit suite
+  - [ ] WP-Kit Mail Application Plugin側へ永続Queue runtimeを分離
+  - [ ] Action Scheduler integrationはApplication Plugin側で実装
+  - [ ] provider transportsはfoundation完成後に追加
+
+  Architecture: `docs/mail-queue.md`
+
 #### Search / Query
 
 - [ ] **TermSearch** — taxonomy term の AND/OR 検索・絞り込み
