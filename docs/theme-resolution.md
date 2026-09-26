@@ -134,15 +134,19 @@ Content-aware routingを行うadapterは、Theme bootstrap前にrequestから対
 
 管理者比較機能はTheme Resolutionの上位機能です。
 
-preview selectorは:
+Foundationとして ThemePreviewRegistry / ThemePreviewTarget / ThemePreviewSelection を提供します。logical preview ID を登録済み ThemeTarget へ変換し、preview.theme を既存 ThemeResolver へ入力します。
+
+preview selector/applicationは:
 
 1. 登録済みThemeTargetだけを選択可能にする
 2. arbitrary filesystem pathを受け付けない
 3. 適切なcapabilityを要求する
-4. request/sessionごとのoverrideとしてThemeContextへ入力する
+4. user/session persistenceから得たlogical IDだけをThemePreviewSelectionへ渡す
 5. Baseへ戻る経路をTheme codeから独立させる
 
-deploy-kitのdeployment名やfilesystem pathをTheme Resolution ruleへ直接渡しません。
+capability / nonce / persistence / admin UI は Site Core / Application Plugin の責務です。
+
+deploy-kitのdeployment名やfilesystem pathをTheme Resolution ruleへ直接渡しません。Deploy Kit WordPress Deploymentとのreview-target bridgeは docs/theme-resolution-deployment-integration.md を参照します。
 
 ## Deployment Integration
 
@@ -189,10 +193,13 @@ Foundationでは以下のみを提供します。
 - rule provenanceを保持する `ThemeResolution`
 - WordPressへrequest単位で適用する `ThemeResolutionRuntime`
 - Theme Mods / Custom CSS のsettings source remap
+- ThemePreviewRegistry / ThemePreviewTarget
+- request-local ThemePreviewSelection
+- preview logical ID を既存Resolverへ接続するrule helper
 
 次段階:
 
-- 管理者Preview Override
+- 管理者Preview UI / persistence adapter
 - user/role context provider
 - request/path provider
 - post/post type content locator
