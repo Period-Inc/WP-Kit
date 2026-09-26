@@ -22,7 +22,19 @@ Purpose:
 
 管理者が同一WordPress Installation上で複数Theme treeを切り替えて比較する。
 
-Required adapter:
+Status:
+
+- implemented: ThemePreviewRegistry
+- implemented: ThemePreviewTarget
+- implemented: request-local ThemePreviewSelection
+- implemented: preview logical ID → shared ThemeResolver rule
+- documented: Deploy Kit WordPress Deployment Review Target bridge
+- remaining: capability/nonce付き管理UI
+- remaining: per-session/per-user persistence adapter
+- remaining: Baseへの独立recovery UI
+- remaining: current resolution diagnostics
+
+Required application adapter:
 
 - registered preview targets
 - capability gate
