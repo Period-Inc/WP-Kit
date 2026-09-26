@@ -178,3 +178,26 @@ WordPress非依存のdomainが独立できる場合は、Domain LibraryとApplic
 実例は定義検証のため別途蓄積する。Rampart / Payment Adapter等は候補だが、十分な比較例が揃うまで分類をこの判断記録では確定しない。
 
 詳細は `docs/application-plugin.md` を正本とする。
+
+
+---
+
+## Mail QueueをCoreとApplication Pluginへ分離する理由
+
+**結論:** WP-Kit Coreには再利用可能なMail contract / primitive / WordPress adapterを置き、永続Queue runtime、migration、Action Scheduler、管理画面、provider設定はWP-Kit Mail Application Pluginが所有する。
+
+Mail Queueは複数Applicationから再利用できる一方、実際にWordPress上で永続Queueを成立させるにはDB migration、scheduled action、運用UI、retention、外部provider integration等のapplication responsibilityが必要になる。これらをWP-Kit Coreへ入れると、ライブラリ単体でpersistent runtimeを暗黙に要求し、既存のApplication Plugin境界を崩す。
+
+そのため依存方向を次に固定する。
+
+```text
+WP-Kit Mail Application Plugin
+             ↓
+          WP-Kit
+```
+
+CoreはMailMessage、Queue/Repository/Scheduler/Transport等のcontract、WpMailTransport / wp_mail hook接続primitiveまでを担当する。Application PluginはQueue persistence、Action Scheduler driver、worker、retry、attachment spool、admin/CLI、health check、provider integrationを担当する。
+
+Action SchedulerはMail Queueの正本ではなくexecution engineとして扱う。Queue状態とattempt履歴はMail側の永続データとして保持する。
+
+詳細は `docs/mail-queue.md` を正本とする。
