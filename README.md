@@ -99,6 +99,8 @@ Themeをロードする前にResolverを有効化する必要があるため、�
 
 → [docs/theme-resolution.md](docs/theme-resolution.md)
 
+管理者previewとDeploy Kit WordPress Deploymentを「現在レビュー中の論理Target」で接続する場合は [docs/theme-resolution-deployment-integration.md](docs/theme-resolution-deployment-integration.md) を参照。
+
 ## MetaBox
 
 ```php
@@ -181,6 +183,7 @@ new MetaBox([
 - [docs/usage-hooks.md](docs/usage-hooks.md) — HookRegistrar / ShortcodeRegistrar（action / filter / shortcode 登録）
 - [docs/theme-resolution.md](docs/theme-resolution.md) — request単位のTheme Resolution責務・設計
 - [docs/theme-resolution-roadmap.md](docs/theme-resolution-roadmap.md) — 管理比較 / user / route / post / taxonomyを同じResolverへ統合する拡張計画
+- [docs/theme-resolution-deployment-integration.md](docs/theme-resolution-deployment-integration.md) — 現在レビュー中Theme targetとDeploy Kit deploymentを疎結合で同期するbridge
 - [docs/usage-theme-resolution.md](docs/usage-theme-resolution.md) — preview / user / post type / taxonomy条件の利用例
 - [docs/usage-template-tags.md](docs/usage-template-tags.md) — Template Tags（pwk()->title() / site() / document()）
 - [docs/migration.md](docs/migration.md) — v1 → v2 移行ガイド・非推奨項目一覧

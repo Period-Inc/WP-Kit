@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Period\WpKit\Application;
 use Period\WpKit\WordPress\SiteInfo;
 use Period\WpKit\WordPress\ThemeResolution\ThemeResolver;
+use Period\WpKit\WordPress\ThemeResolution\ThemePreviewRegistry;
 
 final class ApplicationTest extends TestCase
 {
@@ -38,6 +39,12 @@ final class ApplicationTest extends TestCase
     {
         $this->assertInstanceOf(ThemeResolver::class, $this->app->themes());
         $this->assertSame($this->app->themes(), $this->app->themes());
+    }
+
+    public function testThemePreviewsReturnsRegistry(): void
+    {
+        $this->assertInstanceOf(ThemePreviewRegistry::class, $this->app->themePreviews());
+        $this->assertSame($this->app->themePreviews(), $this->app->themePreviews());
     }
 
     public function testSiteReturnsSiteInfo(): void

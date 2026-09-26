@@ -17,6 +17,7 @@ use Period\WpKit\WordPress\SiteInfo;
 use Period\WpKit\WordPress\TitleResolver;
 use Period\WpKit\WordPress\Translator;
 use Period\WpKit\WordPress\ThemeResolution\ThemeResolver;
+use Period\WpKit\WordPress\ThemeResolution\ThemePreviewRegistry;
 use Period\WpKit\Support\ArgsResolver;
 use Period\WpKit\View\Renderer;
 
@@ -32,6 +33,7 @@ final class Application
     private ?TitleResolver $titleResolver = null;
     private ?DocumentRenderer $documentRenderer = null;
     private ThemeResolver $themes;
+    private ThemePreviewRegistry $themePreviews;
     private bool $booted = false;
 
     public function __construct(string $basePath)
@@ -42,6 +44,7 @@ final class Application
         $this->assets = new ScriptStyleRegistrar($this->basePath);
         $this->posts = new PostTypeRegistrar();
         $this->themes = new ThemeResolver();
+        $this->themePreviews = new ThemePreviewRegistry();
     }
 
     public function assets(): ScriptStyleRegistrar
@@ -57,6 +60,11 @@ final class Application
     public function themes(): ThemeResolver
     {
         return $this->themes;
+    }
+
+    public function themePreviews(): ThemePreviewRegistry
+    {
+        return $this->themePreviews;
     }
 
     public function translator(): Translator
