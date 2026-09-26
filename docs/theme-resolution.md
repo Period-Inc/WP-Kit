@@ -36,9 +36,11 @@ WP-Kit Theme Resolution
 - campaign / experiment 等の条件付き Theme 切替
 - development/test 用に別 directory へ展開した Theme tree の一時 preview
 
-Test Slot は Theme Resolution の特殊概念ではありません。
+Slot は Theme Resolution の特殊概念ではありません。
 
-別 directory に存在する Theme tree を管理者 preview rule が選択することで、結果として Test Slot のように利用できます。
+generic Slot Model (`Period-Inc/deploy-kit/docs/2026-09-27-slot-model-decision.md`) では Slot は論理的な選択対象であり、Theme Resolutionはその Slot ID を ThemeTarget へ結び付ける binding の一実装になれます。
+
+別 directory に存在する Theme tree を管理者 preview rule が選択することで、結果として WordPress Test Slot / multi-theme review として利用できます。
 
 ## Core Model
 
@@ -53,8 +55,8 @@ Themeとして選択する値を表します。
 同じコードの別treeを比較する場合は、例えば:
 
 - template: `astra`
-- stylesheet: `purimall-dk-slot-01`
-- settings_stylesheet: `purimall`
+- stylesheet: `project-theme-slot-01`
+- settings_stylesheet: `base-theme`
 
 とすることで、Theme codeだけを切り替えながら既存site設定を共有できます。
 
@@ -156,21 +158,21 @@ deploy-kitとの連携は疎結合です。
 
 ```text
 deploy-kit
-  fanika-test2-slot-01
-  → wp-content/themes/purimall-dk-slot-01/
+  project-test-slot-01
+  → wp-content/themes/project-theme-slot-01/
 
 WP-Kit Theme Resolution
   preview "slot-01"
   → ThemeTarget(
-       template="astra",
-       stylesheet="purimall-dk-slot-01",
-       settings_stylesheet="purimall"
+       template="base-parent",
+       stylesheet="project-theme-slot-01",
+       settings_stylesheet="base-theme"
      )
 ```
 
-WP-Kitは `fanika-test2-slot-01` というdeploymentの存在を知る必要がありません。
+WP-Kitは `project-test-slot-01` というdeploymentの存在を知る必要がありません。
 
-deploy-kitは `purimall-dk-slot-01` がThemeであることを知る必要がありません。
+deploy-kitは `project-theme-slot-01` がThemeであることを知る必要がありません。
 
 ## Failure Behavior
 

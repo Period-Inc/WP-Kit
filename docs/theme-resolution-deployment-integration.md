@@ -6,6 +6,8 @@ WP-Kit Theme Resolution と deployment tool の責務を分離したまま、Wor
 
 WP-Kit は Theme の論理的な preview/review target を扱います。deploy-kit は deployment と configured directory を扱います。両者を直接依存させず、Site Core / Application Plugin が橋渡しします。
 
+より一般的な Slot の概念定義は `Period-Inc/deploy-kit/docs/2026-09-27-slot-model-decision.md` を正本とします。WP-Kit の ThemePreviewRegistry / ThemePreviewSelection は Slot 自体の定義ではなく、Theme binding / Theme-side selection adapter として利用できます。
+
 ## Responsibility Boundary
 
 ~~~text
@@ -17,11 +19,11 @@ WP-Kit
 
 Site Core / Application Plugin
       ↓ site-specific mapping
-   slot-01 → fanika-test2-slot-01
+   slot-01 → project-test-slot-01
 
 Deploy Kit WordPress Deployment
       ↓ Broker-authorized deployment
-   fanika-test2-slot-01
+   project-test-slot-01
 
 deploy-kit Core
       ↓
@@ -44,12 +46,12 @@ $previews
     ->register(
         'base-review',
         'Base',
-        new ThemeTarget('astra', 'purimall', 'purimall')
+        new ThemeTarget('base-parent', 'base-theme', 'base-theme')
     )
     ->register(
         'slot-01',
         'Slot 01',
-        new ThemeTarget('astra', 'purimall-dk-slot-01', 'purimall')
+        new ThemeTarget('base-parent', 'project-theme-slot-01', 'base-theme')
     );
 
 $previews->registerResolverRule(pwk()->themes());
@@ -98,8 +100,8 @@ add_filter(
         }
 
         $deploymentMap = [
-            'base-review' => 'fanika-test2',
-            'slot-01' => 'fanika-test2-slot-01',
+            'base-review' => 'project-test',
+            'slot-01' => 'project-test-slot-01',
         ];
 
         if (!isset($deploymentMap[$id])) {
@@ -137,11 +139,13 @@ lock: true の review target がある場合、Deploy Kit WordPress Deployment �
 
 ## Base / Slot Semantics
 
-Base / Slot は site/application vocabulary です。WP-Kit Core はそれらを特別な型として持ちません。
+Slot は WP-Kit 固有概念ではありません。generic Slot Modelでは Slot は logical selectable workspace/target identity であり、Theme・deployment・directoryを内包しません。
+
+WP-Kit Core は Slot を特別な型として持たず、logical ID を ThemeTarget へ結び付ける Theme binding 側として動作します。
 
 base-review / slot-01 / slot-02 / member-theme-check / campaign-preview は、すべて logical preview target ID として同じです。
 
-同様に deploy-kit Core にとって fanika-test2 / fanika-test2-slot-01 / fanika-test2-slot-02 は単なる deployment identifiers です。
+同様に deploy-kit Core にとって project-test / project-test-slot-01 / project-test-slot-02 は単なる deployment identifiers です。
 
 ## Safety
 

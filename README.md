@@ -99,7 +99,7 @@ Themeをロードする前にResolverを有効化する必要があるため、�
 
 → [docs/theme-resolution.md](docs/theme-resolution.md)
 
-管理者previewとDeploy Kit WordPress Deploymentを「現在レビュー中の論理Target」で接続する場合は [docs/theme-resolution-deployment-integration.md](docs/theme-resolution-deployment-integration.md) を参照。
+管理者previewとDeploy Kit WordPress Deploymentを「現在レビュー中の論理Target」で接続する場合は [docs/theme-resolution-deployment-integration.md](docs/theme-resolution-deployment-integration.md) を参照。SlotそのものはWP-Kit固有概念ではなく、generic Slot ModelのTheme bindingとして扱います。
 
 ## MetaBox
 
