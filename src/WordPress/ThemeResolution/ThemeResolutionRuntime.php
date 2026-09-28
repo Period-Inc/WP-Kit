@@ -52,11 +52,14 @@ final class ThemeResolutionRuntime
             $context = ($this->contextFactory)();
 
             if (!$context instanceof ThemeContext) {
-                $this->resolved = true;
                 return null;
             }
 
             $resolution = $this->resolver->resolve($context);
+            if ($resolution === null) {
+                return null;
+            }
+
             $this->resolution = $resolution;
             $this->resolved = true;
 
