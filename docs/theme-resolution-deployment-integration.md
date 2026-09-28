@@ -67,20 +67,33 @@ ThemePreviewSelection は request-local な論理選択だけを保持します�
 
 現在選択中の logical target は既存の Theme Resolution pipeline へ渡します。
 
+外部adapterが logical ID を公開している場合は `ThemePreviewContextProvider` を使えます。provider は callable だけを受け取るため、WP-Kit Core は Deploy Kit や永続化方式に依存しません。
+
 ~~~php
+use Period\WpKit\WordPress\ThemeResolution\ThemePreviewContextProvider;
+
+$contextProvider = new ThemePreviewContextProvider(
+    $previews,
+    static function (): ?string {
+        return function_exists('deploy_kit_wordpress_current_slot_id')
+            ? deploy_kit_wordpress_current_slot_id()
+            : null;
+    }
+);
+
 $runtime = new ThemeResolutionRuntime(
     pwk()->themes(),
-    function () use ($selection) {
-        return $selection->withContext(
-            new ThemeContext([
-                // user/request/content context...
-            ])
-        );
-    }
+    static fn () => $contextProvider->context(
+        new ThemeContext([
+            // user/request/content context...
+        ])
+    )
 );
 
 $runtime->register();
 ~~~
+
+未知のID・未選択・adapter未導入の場合はTheme overrideを行わず、WordPress標準Themeへfall throughします。
 
 管理previewは独立した Theme switching engine ではありません。preview.theme が高priority ruleへ入り、通常の user / route / content rule と同じ Resolver で競合解決されます。
 
