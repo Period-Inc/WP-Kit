@@ -114,6 +114,32 @@ final class ThemeResolutionRuntimeTest extends TestCase
         self::assertSame('native', $nested);
     }
 
+    public function testRuntimeRetriesAfterEarlyUnresolvedContext(): void
+    {
+        $preview = null;
+
+        $resolver = new ThemeResolver();
+        $resolver->addRule(
+            'preview',
+            fn (ThemeContext $context) =>
+                $context->get('preview.theme') === 'slot-01'
+                    ? new ThemeTarget('astra', 'purimall-slot-01', 'purimall')
+                    : null
+        );
+
+        $runtime = new ThemeResolutionRuntime(
+            $resolver,
+            fn () => new ThemeContext(['preview.theme' => $preview])
+        );
+
+        self::assertSame('purimall', $runtime->filterStylesheet('purimall'));
+
+        $preview = 'slot-01';
+
+        self::assertSame('purimall-slot-01', $runtime->filterStylesheet('purimall'));
+        self::assertSame('astra', $runtime->filterTemplate('purimall'));
+    }
+
     public function testContextIsResolvedOnlyOncePerRequest(): void
     {
         $calls = 0;
