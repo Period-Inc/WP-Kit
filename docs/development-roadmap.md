@@ -265,9 +265,39 @@ Current implementation priorities:
 
 #### Calendar / Data
 
-- [ ] **Calendar WP 展開** — Support\Calendar をスケジュール表として WordPress で使う
-  - 投稿をカレンダー上にマッピング
-  - WP クエリと Calendar::month() の統合ヘルパー
+- [ ] **Calendar Engine** — 時間軸・暦・保存先・外部カレンダーを分離した scheduling foundation
+  - 正本仕様: `docs/calendar-engine.md`
+  - 既存スケジュール表システムを MVP consumer とし、エンジンを置き換える
+  - UNIX timestamp を timed event のシステム内正規時刻とする
+  - Gregorian calendar は projection / adapter とし、MVP では Gregorian のみ実装する
+  - timezone は IANA timezone ID で明示する
+  - 終日予定は timestamp へ潰さず CalendarDate / DateRange semantics を保持する
+  - recurrence は秒 interval ではなく local wall time + timezone + RRULE を基本とする
+  - WordPress meta を MVP primary repository とするが Domain は meta に依存しない
+  - Google Calendar / iCalendar / 公開 calendar は adapter / serializer として接続する
+  - internal event ID と WordPress / Google / iCalendar の external ID を分離する
+  - 予約は Calendar Event と別 Domain とし、Resource / Hold / Reservation / Confirmation を持つ
+  - 高競合予約は dedicated table / transactional repository を利用可能にする
+
+  MVP:
+  - [ ] existing Calendar / CalendarDay regression tests
+  - [ ] Instant / TimeRange / timezone
+  - [ ] CalendarAdapterInterface
+  - [ ] GregorianCalendarAdapter
+  - [ ] timed / all-day Event model
+  - [ ] recurrence abstraction
+  - [ ] MetaScheduleRepository
+  - [ ] existing schedule table integration
+  - [ ] iCalendar export
+  - [ ] Google Calendar Adapter boundary
+
+  Future:
+  - [ ] Google Calendar bidirectional sync / Google-backed persistence
+  - [ ] public calendar feed / access policy
+  - [ ] Availability / Resource
+  - [ ] realtime Hold / Reservation / Confirmation
+  - [ ] multi-resource atomic booking
+  - [ ] non-Gregorian calendar adapters
 
 #### Admin / UX
 
