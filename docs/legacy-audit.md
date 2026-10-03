@@ -25,7 +25,7 @@
 | `WPCF/class.TermSearch.php` | taxonomy term の AND/OR 検索・絞り込みフォーム | not migrated | 再設計 | ロードマップ記載済み。WP_Query 連動 |
 | `WPCF/class.SiteData.php` | サイト共通データ (HTML断片/オプション) 管理 | not migrated | 再設計 | ロードマップ記載済み。Parts/Include と統合 |
 | `WP-Custom-Utility/WP_CustomUtility_Parts.php` | 再利用可能コンテンツ断片 (Parts) の投稿タイプ＋ショートコード | not migrated | 再設計 | Include shortcode / SiteData の基盤になる |
-| `WPCF/class.EventSchedule.php` | イベント投稿タイプ＋カレンダー表示・日付範囲クエリ | partially migrated | 再設計 | Calendar (Support) は実装済み。WP連動が未実装 |
+| `WPCF/class.EventSchedule.php` | イベント投稿タイプ＋カレンダー／スケジュール表示・日付範囲クエリ | partially migrated | Calendar Engine へ再設計 | date/start/end、複数event/day、start_of_week、date route 等を要求として継承。post_date と schedule time の結合は継承しない |
 
 ---
 
@@ -102,8 +102,8 @@
 | `WPCF/lib/class.Date.php` | `Date` (Support) + `Calendar` | migrated |
 | `WP_CustomUtility_MetaBox` (radio / posts フィールド) | `MetaBox` (一部未実装) | partially migrated |
 | `WP_CustomUtility_MetaBox` (multiplier) | `MetaBox` repeater フィールド | partially migrated |
-| `ScheduleCalendar` (DEPRECATED) | `Calendar` | partially migrated |
-| `EventSchedule` | `Calendar` (データ層のみ) | partially migrated |
+| `ScheduleCalendar` (DEPRECATED) | `Calendar Engine` の legacy requirement source | partially migrated |
+| `EventSchedule` | `Calendar Engine` + WordPress adapter（再設計中） | partially migrated |
 | `WP_CustomUtility_Parts` | — (SiteData / Include shortcode として再設計予定) | not migrated |
 | `BreadCrumb` | — | not migrated |
 | `Relation` | — | not migrated |
@@ -129,7 +129,7 @@
 - **Posts shortcode** — `WP_CustomUtility_Posts::sc_posts()` を再設計。WP_Query + Renderer ベースで
 - **CustomOption** — `WPCF/class.CustomOption.php` のシンプルな再設計。`get_option`/`update_option` ラッパー
 - **ThemeImage** — `WPCF/class.ThemeImage.php` を小規模再設計。テーマアセットパス解決
-- **Calendar WP 展開** — `EventSchedule` のデータロジックを `Calendar` ベースで再実装
+- **Calendar Engine** — `EventSchedule` / obsolete `ScheduleCalendar` を requirement source として参照し、time core / calendar projection / WordPress repository / display projection を分離して再実装
 - **MetaBox radio / posts フィールド補完** — 現行 MetaBox の未実装フィールド型を追加
 - **Admin UI** — `WP_CustomUtility_Admin` (ID表示) など管理画面ユーティリティを Phase 3 Admin UI に含める
 - **PublicHoliday** — 必要な場合は独立パッケージとして切り出し（本体には含めない）
