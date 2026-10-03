@@ -106,10 +106,25 @@ Current implementation priorities:
   - 保存期間による自動 purge は後続拡張候補
   - WooCommerce / ACF 等の大量更新を無条件に記録しない
 
-- [ ] **Relation** — post type 間の親子関係
-  - 親/子 post_id を保持するメタフィールド
-  - 管理画面の親/子リンク UI
-  - 複数 post type 間の双方向参照
+- [ ] **Relation** — post type 間の型付き親子関係
+  - [x] Legacy Relation audit
+  - [x] single source + projection 設計確定
+  - [x] Taxonomy / Relation / Relation Entity の境界確定
+  - [ ] RelationDefinition を name + parentPostType + childPostType + parentMetaKey へ更新
+  - [ ] legacy childrenMetaKey を deprecated 化
+  - [ ] RelationRegistry
+  - [ ] RelationRepositoryInterface
+  - [ ] PostMetaRelationRepository
+  - [ ] RelationService
+  - [ ] parent / children / attach / detach
+  - [ ] 同一 PostType Relation
+  - [ ] 複数 Relation Definition の key collision 検証
+  - [ ] Legacy compatible meta fixture / tests
+  - [ ] 最小 RelationMetaBox / Admin links
+  - 正本は Child 側 parent meta のみ
+  - Parent → Children は保存せず Projection
+  - M:N / relation attributes は Relation Entity へ昇格
+  - 詳細: `docs/architecture-metabox-relation.md`
 
 - [ ] **SiteData** — HTML コードスニペットの挿入
   - 別 Post やショートコードから HTML 断片を挿入
@@ -420,7 +435,8 @@ WordPress を Headless CMS として使う場合に、REST API / GraphQL / front
   - Next.js / Astro / Nuxt などの再生成通知に対応する
 
 - [ ] **Relation API Adapter**
-  - `relation_parent` / `relation_children` を API 向けに展開する
+  - Relation name を API 契約として parent / children を展開する
+  - children は child meta から生成する Projection とし、永続化しない
   - ID だけでなく title / slug / link などを返せるようにする
 
 - [ ] **SiteData API**
