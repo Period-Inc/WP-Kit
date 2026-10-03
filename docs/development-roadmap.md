@@ -281,12 +281,16 @@ Current implementation priorities:
 
   MVP:
   - [ ] existing Calendar / CalendarDay regression tests
+  - [ ] Legacy EventSchedule / ScheduleCalendar behavior audit and migration fixtures
   - [ ] Instant / TimeRange / timezone
   - [ ] CalendarAdapterInterface
   - [ ] GregorianCalendarAdapter
   - [ ] timed / all-day Event model
+  - [ ] optional named temporal marker boundary (Legacy open_time 等)
   - [ ] recurrence abstraction
   - [ ] MetaScheduleRepository
+  - [ ] do not overload wp_posts.post_date as Event start
+  - [ ] Legacy EventSchedule migration / conflict audit path
   - [ ] existing schedule table integration
   - [ ] iCalendar export
   - [ ] Google Calendar Adapter boundary
