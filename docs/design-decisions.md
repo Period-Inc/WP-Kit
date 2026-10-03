@@ -178,3 +178,36 @@ WordPress非依存のdomainが独立できる場合は、Domain LibraryとApplic
 実例は定義検証のため別途蓄積する。Rampart / Payment Adapter等は候補だが、十分な比較例が揃うまで分類をこの判断記録では確定しない。
 
 詳細は `docs/application-plugin.md` を正本とする。
+
+
+---
+
+## Relation を child-side single source にする理由
+
+**結論:** Relation の永続データは Child Post 側の parent meta のみに保存し、Parent → Children は Projection として解決する。
+
+Legacy `WPCF/class.Relation.php` は `custom_parent` 等の child meta を正本にし、親側の children 配列は保存していなかった。この方式は parent / child の二重書き込みを避け、Relation の更新時に整合性維持処理を必要としない。
+
+新 Relation でもこの原則を維持する。
+
+```text
+Child.meta[parentMetaKey] = Parent ID   ← source of truth
+
+Parent.children[]                    ← query / projection
+```
+
+旧設計案の `relation_children` 永続化は採用しない。既存 `RelationDefinition::$childrenMetaKey` は実装移行時に deprecated とし、互換期間後に削除する。
+
+Relation Core の基本 cardinality は 1:N とする。同一 Child が複数種類の Relation に参加する場合は Relation Definition と meta key を分ける。
+
+Relation 自体に price / order / status / period 等の属性が必要になった場合、単純 Relation を肥大化させず Relation Entity に昇格する。
+
+分類・関係・関係実体の境界は次とする。
+
+```text
+分類                         → Taxonomy
+Post A と Post B の関係      → Relation
+関係自体に属性・状態・履歴   → Relation Entity
+```
+
+詳細仕様は `docs/architecture-metabox-relation.md` を正本とする。
