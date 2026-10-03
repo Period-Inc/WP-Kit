@@ -217,3 +217,22 @@ Calendar Engine は将来、Google Calendar 保存、双方向同期、公開カ
 Persistence は repository interface、Google 等は adapter として接続する。
 
 予約機能では同時仮押さえや複数 Resource の原子的確保が必要になるため、WordPress post meta のみを排他制御の前提としない。Calendar の通常保存と Reservation の transactional persistence は交換可能な境界を持たせる。
+
+
+---
+
+## WordPress post_date を Event 開始時刻として使わない理由
+
+**結論:** `wp_posts.post_date` は WordPress publication semantics に限定し、Calendar Event の temporal definition とは分離する。
+
+Legacy `EventSchedule` / `ScheduleCalendar` は、イベントの日付・開始時刻を WordPress の投稿日時へ反映し、その `post_date` を月範囲クエリの基準にしていた。
+
+この方法では未来のイベントが WordPress の予約投稿 `future` と解釈されるため、Legacy には未来投稿を `publish` へ強制変換する `force_future_to_publish()` が存在する。これは schedule semantics と publication semantics を同じフィールドへ載せたことによる副作用である。
+
+新 Calendar Engine では Event start/end を独立した temporal data として保持する。
+
+WordPress 側で範囲検索の効率化が必要な場合は、Infrastructure repository が検索用 index / denormalized meta を持つことは許容する。ただし、その index は canonical Event time ではない。
+
+また Legacy の `open_time` のような start/end 以外の時刻は、Event interval に押し込めず named temporal marker として拡張可能な境界を残す。
+
+詳細は `docs/calendar-engine.md` の Legacy implementation findings を参照する。
