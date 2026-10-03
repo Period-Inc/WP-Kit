@@ -484,3 +484,112 @@ Calendar Engine は以下を行わない。
 - `mktime()` を Core identity とすること
 
 既存 API は compatibility layer として残し、新 Engine の projection を内部利用する形へ段階的に差し替える。
+
+
+## 17. Legacy implementation findings
+
+新 Engine は、以下の Legacy 実装を参照して再設計する。
+
+- `src/Legacy/WPCF/class.EventSchedule.php`
+- `src/Legacy/WPCF/class.ScheduleCalendar.php`（obsolete。EventSchedule の前身）
+- `src/Legacy/WPCF/lib/class.Date.php`
+- `src/Legacy/WPCF/lib/class.PublicHoliday.php`
+- `src/Legacy/WP-Custom-Utility/CustomUtility/CustomUtility_Calendar.php`
+
+### 17.1 Legacy から引き継ぐ概念
+
+Legacy EventSchedule / ScheduleCalendar には、現在も有効な要求がすでに存在する。
+
+- Event を WordPress post / CPT として扱える
+- date / start time / end time を編集できる
+- 旧 ScheduleCalendar には `open_time` もあり、start/end 以外の意味を持つ時刻を扱っていた
+- 一日に複数 Event を保持できる
+- month calendar と schedule/list の複数 projection を持つ
+- `start_of_week` を変更できる
+- month の previous / next navigation を持つ
+- `/schedule/YYYY/MM/DD` 相当の date route を持つ
+- current day / current week / weekday / previous-current-next month を表示上区別できる
+- holiday を calendar decoration として扱う
+- event fields / meta fields を追加できる
+- arbitrary meta key で event を並び替えられる
+- hook / filter により表示や挙動を拡張できる
+
+これらは「Legacy UI を再現する」という意味ではなく、新 Domain / Projection / Adapter へ要求として取り込む。
+
+### 17.2 Legacy から引き継がない結合
+
+Legacy では schedule date/time と WordPress publication date が強く結合している。
+
+EventSchedule は月範囲の取得を `wp_posts.post_date` で行い、編集画面では date / start_time から WordPress の `aa/mm/jj/hh/mn` を書き換えている。
+
+その結果、未来の Event が WordPress の予約投稿 `future` と解釈されるため、`force_future_to_publish()` で強制的に `publish` へ戻す処理が必要になっている。
+
+新 Engine では以下を禁止する。
+
+- `post_date` を Event start の canonical value にする
+- Event schedule と WordPress publication scheduling を同一状態として扱う
+- `post_title` に date/time を埋め込んで schedule identity とする
+- date meta / post_date / hidden timestamp の複数値を同時に正本とする
+
+WordPress `post_date` は WordPress object 自体の publication semantics として扱う。
+
+Event の日時は Calendar Domain の temporal definition を正本とする。
+
+必要であれば Infrastructure 層で検索用の denormalized index を保持してよいが、それを Domain の正本にはしない。
+
+### 17.3 Named temporal markers
+
+旧 ScheduleCalendar の `open_time` は、Event が単純な start/end interval だけでは表現できない場合があることを示している。
+
+そのため Event は将来的に optional な named temporal marker を持てる設計とする。
+
+例:
+
+- doors_open
+- reception_start
+- check_in
+- last_entry
+
+MVP で専用クラスを必須実装とはしないが、arbitrary metadata に文字列時刻を保存して意味を失わせる設計にはしない。
+
+start/end は Event interval の意味を持ち、その他の時刻は別概念として拡張可能にする。
+
+### 17.4 Calendar decoration
+
+Legacy の PublicHoliday、today / this_week、weekday class 等は Event Domain ではなく Calendar Projection の decoration として扱う。
+
+想定:
+
+- HolidayProvider
+- DayDecoration / CalendarDecoration
+- locale weekday / month labels
+- current-day marker
+
+日本の祝日判定ロジック自体は Legacy の静的実装を移植せず、保守されている外部データ／ライブラリを優先する。
+
+### 17.5 Legacy migration rule
+
+既存 EventSchedule データを新 Engine に移行する場合、無条件変換は行わない。
+
+Legacy は同一 Event の日時情報を複数箇所へ保持している可能性があるため、少なくとも以下を比較する。
+
+- `post_date`
+- date meta
+- start_time meta
+- end_time meta
+- open_time meta（存在する場合）
+- title 内に埋め込まれた date/time
+- site timezone
+
+変換時に値が一致しない場合は silent overwrite せず conflict として記録する。
+
+基本 mapping 候補:
+
+- date + start_time -> timed Event start
+- date + end_time -> timed Event end
+- open_time -> named temporal marker
+- post_time -> audit / created metadata
+- post content / event_title / additional fields -> Event content / metadata
+- `post_date` -> migration verification source。新 Event の正本にはしない
+
+時刻が欠落している Event を自動的に all-day と断定するかは migration policy で決定し、Core の暗黙仕様にはしない。
