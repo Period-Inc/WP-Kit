@@ -178,3 +178,61 @@ WordPress非依存のdomainが独立できる場合は、Domain LibraryとApplic
 実例は定義検証のため別途蓄積する。Rampart / Payment Adapter等は候補だが、十分な比較例が揃うまで分類をこの判断記録では確定しない。
 
 詳細は `docs/application-plugin.md` を正本とする。
+
+
+---
+
+## Calendar Engine で時間軸と暦を分離する理由
+
+**結論:** timed event のシステム内正規時刻は UNIX timestamp とし、Gregorian calendar を含む暦は projection / adapter として扱う。
+
+Calendar Engine が `year / month / day` を時間軸そのものとして保持すると、別暦対応、timezone 変換、Google Calendar / iCalendar 連携、予定衝突判定が同じ層へ混在する。そこで、時間軸上の一点を `Instant`、暦上の表現を `CalendarAdapter` の責務として分離する。
+
+MVP は Gregorian calendar のみ実装するが、Domain model は Gregorian 固定にしない。
+
+ただし全ての時間情報を UNIX timestamp に変換するわけではない。
+
+- 終日予定は CalendarDate / DateRange の意味論を保持する
+- 定期予定は local wall time + timezone + recurrence rule を保持する
+- DST をまたぐ「毎週月曜 10:00」を固定秒 interval として扱わない
+
+この例外を設けることで、外部カレンダーとの相互変換時にも元の意味を失わない。
+
+詳細は `docs/calendar-engine.md` を正本とする。
+
+---
+
+## Calendar Engine の保存先を Domain から分離する理由
+
+**結論:** WordPress meta は MVP の primary persistence とするが、Calendar Domain は meta / post ID / Google event ID に依存させない。
+
+Calendar Engine は将来、Google Calendar 保存、双方向同期、公開カレンダー、予約システムへ拡張する。保存形式を Domain entity に組み込むと、保存先ごとに Event model 自体を変更する必要が生じる。
+
+そのため内部 canonical event ID を持ち、以下は mapping として扱う。
+
+- WordPress object ID
+- Google calendar / event ID
+- iCalendar UID
+
+Persistence は repository interface、Google 等は adapter として接続する。
+
+予約機能では同時仮押さえや複数 Resource の原子的確保が必要になるため、WordPress post meta のみを排他制御の前提としない。Calendar の通常保存と Reservation の transactional persistence は交換可能な境界を持たせる。
+
+
+---
+
+## WordPress post_date を Event 開始時刻として使わない理由
+
+**結論:** `wp_posts.post_date` は WordPress publication semantics に限定し、Calendar Event の temporal definition とは分離する。
+
+Legacy `EventSchedule` / `ScheduleCalendar` は、イベントの日付・開始時刻を WordPress の投稿日時へ反映し、その `post_date` を月範囲クエリの基準にしていた。
+
+この方法では未来のイベントが WordPress の予約投稿 `future` と解釈されるため、Legacy には未来投稿を `publish` へ強制変換する `force_future_to_publish()` が存在する。これは schedule semantics と publication semantics を同じフィールドへ載せたことによる副作用である。
+
+新 Calendar Engine では Event start/end を独立した temporal data として保持する。
+
+WordPress 側で範囲検索の効率化が必要な場合は、Infrastructure repository が検索用 index / denormalized meta を持つことは許容する。ただし、その index は canonical Event time ではない。
+
+また Legacy の `open_time` のような start/end 以外の時刻は、Event interval に押し込めず named temporal marker として拡張可能な境界を残す。
+
+詳細は `docs/calendar-engine.md` の Legacy implementation findings を参照する。
